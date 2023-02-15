@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema
@@ -19,11 +21,12 @@ class DealListCreateView(ListCreateAPIView):
         queryset = super().get_queryset()
         return deals_queryset(queryset)
 
-    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(cache_page(settings.CACHE_TTL))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
     @extend_schema(responses={200: None})
     def create(self, request, *args, **kwargs):
         super().create(request, *args, **kwargs)
+        cache.clear()
         return Response()
