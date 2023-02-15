@@ -1,0 +1,76 @@
+[tool.poetry]
+name = "sibdev-test"
+version = "0.1.0"
+description = ""
+authors = ["Ruslan Korneev <ruslan@kortechs.io>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.1.7"
+djangorestframework = "^3.14.0"
+python-dotenv = "^0.21.1"
+django-extensions = "^3.2.1"
+gunicorn = "^20.1.0"
+psycopg2-binary = "^2.9.5"
+drf-spectacular = "^0.25.1"
+djangorestframework-camel-case = "^1.4.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.10.0"
+pre-commit = "^3.0.4"
+django-stubs = "^1.14.0"
+djangorestframework-stubs = "^1.8.0"
+mypy = "^1.0.0"
+ruff = "^0.0.246"
+pytest = "^7.2.1"
+pytest-django = "^4.5.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = '''(?x)(
+    .*migrations/.*\.py$
+)'''
+plugins = [
+    "mypy_django_plugin.main",
+    "mypy_drf_plugin.main",
+]
+
+[tool.django-stubs]
+django_settings_module = "src.sibdev.settings"
+ignore_missing_model_attributes = true
+
+[tool.poetry.scripts]
+sibdev = "src.manage:main"
+
+[tool.ruff]
+ignore = ["F401", "F403", "F405"]
+exclude = [
+    "migrations",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+line-length = 120
