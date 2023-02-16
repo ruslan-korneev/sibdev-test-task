@@ -52,6 +52,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.5.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
+        redis-port: 6379
+
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v2
     - uses: syphar/restore-virtualenv@v1
