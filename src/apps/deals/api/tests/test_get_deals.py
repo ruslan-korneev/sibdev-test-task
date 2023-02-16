@@ -34,7 +34,8 @@ def success_get_data():
 def test_get_deals(success_get_data, deals_csv, deals_csv_second, api_client):
     # first i should upload data
     client = api_client()
-    client.post(reverse("deal-list"), {"deals": deals_csv}, format="multipart")
+    with open(deals_csv, "r") as file:
+        client.post(reverse("deal-list"), {"deals": file}, format="multipart")
 
     # get deals
     response = client.get(reverse("deal-list"))
@@ -43,7 +44,8 @@ def test_get_deals(success_get_data, deals_csv, deals_csv_second, api_client):
 
     # update csv
     client = api_client()
-    client.post(reverse("deal-list"), {"deals": deals_csv_second}, format="multipart")
+    with open(deals_csv_second, "r") as file:
+        client.post(reverse("deal-list"), {"deals": file}, format="multipart")
 
     # get deals, data should be different
     response = client.get(reverse("deal-list"))

@@ -24,9 +24,12 @@ from rest_framework import status
 def test_deals_failed_uploading_disallowed_extension(
     file_fixture, expect_data_fixture, status_code, api_client, request
 ):
-    file = request.getfixturevalue(file_fixture)
+    filename = request.getfixturevalue(file_fixture)
     client = api_client()
-    response = client.post(reverse("deal-list"), {"deals": file}, format="multipart")
+    with open(filename, "r") as file:
+        response = client.post(
+            reverse("deal-list"), {"deals": file}, format="multipart"
+        )
     assert response.status_code == status_code, response.data
     if expect_data_fixture:
         expect_data = request.getfixturevalue(expect_data_fixture)

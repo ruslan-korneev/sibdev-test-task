@@ -4,24 +4,24 @@ import pytest
 from django.conf import settings
 
 
-@pytest.fixture(scope="session")
-def deals_csv() -> IO:
-    return open(settings.TEST_FILES["deals_csv"])
+@pytest.fixture()
+def deals_csv() -> str:
+    return settings.TEST_FILES["deals_csv"]
 
 
-@pytest.fixture(scope="session")
-def deals_csv_second() -> IO:
-    return open(settings.TEST_FILES["deals_csv_second"])
+@pytest.fixture()
+def deals_csv_second() -> str:
+    return settings.TEST_FILES["deals_csv_second"]
 
 
-@pytest.fixture(scope="session")
-def deals_csv_invalid_file_extension() -> IO:
-    return open(settings.TEST_FILES["deals_csv_invalid_file_extension"])
+@pytest.fixture()
+def deals_csv_invalid_file_extension() -> str:
+    return settings.TEST_FILES["deals_csv_invalid_file_extension"]
 
 
-@pytest.fixture(scope="session")
-def deals_txt_invalid_data() -> IO:
-    return open(settings.TEST_FILES["deals_txt_invalid_data"])
+@pytest.fixture()
+def deals_txt_invalid_data() -> str:
+    return settings.TEST_FILES["deals_txt_invalid_data"]
 
 
 @pytest.fixture
