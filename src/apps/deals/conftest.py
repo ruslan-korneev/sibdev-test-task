@@ -31,13 +31,17 @@ def expect_fail_invalid_data():
             "total": ["A valid number is required."],
             "quantity": ["A valid integer is required."],
             "date": [
-                "Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]."
+                "Datetime has wrong format. "
+                "Use one of these formats instead: "
+                "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]."
             ],
             "line": "2",
         },
         {
             "date": [
-                "Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]."
+                "Datetime has wrong format. "
+                "Use one of these formats instead: "
+                "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]."
             ],
             "line": "5",
         },
