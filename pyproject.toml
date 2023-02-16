@@ -75,3 +75,9 @@ exclude = [
     "venv",
 ]
 line-length = 120
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "src.sibdev.settings_test"
+addopts = "--nomigrations -x"
+testpaths = "src"
+norecursedirs = "migrations templates views serializers admin mocks mock"

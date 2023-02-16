@@ -37,6 +37,16 @@ class DealCreateListSerializer(serializers.Serializer):
         ]
 
         serializer = DealSerializer(data=deals, many=True)
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as exc:
+            raise serializers.ValidationError(
+                [
+                    {**detail, "line": line}
+                    for line, detail in enumerate(exc.detail, start=2)
+                    if detail
+                ],
+            )
+
         Deal.objects.all().delete()
         serializer.save()
