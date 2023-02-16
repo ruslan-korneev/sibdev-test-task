@@ -1,0 +1,79 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+
+    - uses: syphar/restore-pip-download-cache@v1
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
+    - run: |
+
+        curl -sSL https://install.python-poetry.org | python -
+        poetry install
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
+  linter:
+    name: Linter
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+
+    - run: ruff .
+
+  tests:
+    name: Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.5.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
+        redis-port: 6379
+
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+
+    - run: pytest
+
+  check-migrations:
+    name: Check Migrations
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+
+    - run: |
+        sibdev makemigrations --dry-run --check
