@@ -9,23 +9,23 @@ def success_get_data():
         {
             "username": "resplendent",
             "spentMoney": "451731.00",
-            "gems": ["Рубин", "Сапфир", "Танзанит"],
+            "gems": ["Сапфир", "Танзанит", "Рубин"],
         },
         {
             "username": "bellwether",
             "spentMoney": "217794.00",
-            "gems": ["Петерсит", "Сапфир"],
+            "gems": ["Сапфир", "Петерсит"],
         },
         {
             "username": "uvulaperfly117",
             "spentMoney": "120419.00",
-            "gems": ["Петерсит", "Танзанит"],
+            "gems": ["Танзанит", "Петерсит"],
         },
         {"username": "braggadocio", "spentMoney": "108957.00", "gems": ["Изумруд"]},
         {
             "username": "turophile",
             "spentMoney": "100132.00",
-            "gems": ["Изумруд", "Рубин"],
+            "gems": ["Рубин", "Изумруд"],
         },
     ]
 

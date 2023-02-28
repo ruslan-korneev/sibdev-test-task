@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from src.apps.deals.api.serializers import DealCreateListSerializer
 from src.apps.deals.models import Deal
-from src.apps.deals.utils import deals_queryset
+from src.apps.deals.utils import get_top_customers_with_gems
 
 
 class DealListCreateView(ListCreateAPIView):
@@ -17,13 +17,11 @@ class DealListCreateView(ListCreateAPIView):
     serializer_class = DealCreateListSerializer
     parser_classes = (MultiPartParser,)
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return deals_queryset(queryset)
-
     @method_decorator(cache_page(settings.CACHE_TTL))
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        data = get_top_customers_with_gems()
+        serializer = self.get_serializer(data, many=True)
+        return Response(serializer.data)
 
     @extend_schema(responses={200: None})
     def create(self, request, *args, **kwargs):

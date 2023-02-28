@@ -1,51 +1,53 @@
-from typing import Any
-
 from django.conf import settings
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Sum, FloatField, QuerySet, Case, When
+from django.db.models import Sum, DecimalField
+from django.db.models.functions import Coalesce
 
 from src.apps.deals.models import Deal
 
 
-def _get_top_by_spent_money(queryset) -> QuerySet[dict[str, Any]]:
+def get_top_customers():
     return (
-        queryset.values("customer")
-        .order_by("customer")
-        .annotate(spent_money=Sum("total", output_field=FloatField()))
+        Deal.objects.values("customer")
+        .annotate(spent_money=Coalesce(Sum("total"), 0, output_field=DecimalField()))
         .order_by("-spent_money")[: settings.CUSTOMER_LIST_QUANTITY]
     )
 
 
-def _add_spent_money_and_gems(data: QuerySet[dict[str, Any]]) -> list[Deal]:
+def get_gems_for_customers(customers: list[str]) -> dict:
+    deals = (
+        Deal.objects.filter(customer__in=customers)
+        .values("customer", "item")
+        .distinct()
+    )
+
+    gems = {}
+    for deal in deals:
+        if deal["customer"] not in gems:
+            gems[deal["customer"]] = set()
+
+        gems[deal["customer"]].add(deal["item"])
+    return gems
+
+
+def get_top_customers_with_gems():
+    top_customers = get_top_customers()
+    top_customers_names = [customer["customer"] for customer in top_customers]
+    gems = get_gems_for_customers(customers=top_customers_names)
+
     result = []
-    for row in data:
-        deal = Deal.objects.filter(customer=row["customer"]).first()
-        deal.spent_money = row["spent_money"]
-        other_customers_gems = Deal.objects.filter(
-            customer__in=[
-                tmp_deal["customer"]
-                for tmp_deal in data
-                if tmp_deal["customer"] != deal.customer
-            ]
-        ).aggregate(gems=ArrayAgg("item", distinct=True))["gems"]
-        deal.gems = [
-            gem
-            for gem in Deal.objects.filter(customer=deal.customer).aggregate(
-                gems=ArrayAgg(
-                    Case(
-                        When(item__in=other_customers_gems, then="item"),
-                        default=None,
-                    ),
-                    distinct=True,
-                )
-            )["gems"]
-            if gem
-        ]
-        result.append(deal)
+    for customer in top_customers:
+        result_gems = list()
+        for other_customer in top_customers_names:
+            if other_customer != customer["customer"] and other_customer in gems:
+                result_gems += list(gems[customer["customer"]] & gems[other_customer])
+
+        spent_money = customer["spent_money"]
+        result.append(
+            {
+                "customer": customer["customer"],
+                "gems": result_gems,
+                "spent_money": spent_money,
+            }
+        )
 
     return result
-
-
-def deals_queryset(queryset):
-    data = _get_top_by_spent_money(queryset)
-    return _add_spent_money_and_gems(data)
